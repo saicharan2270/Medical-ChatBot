@@ -1,56 +1,44 @@
-# Medical PDF Chatbot (End-to-End RAG Application)
+# 🩺 Medical PDF Chatbot (End to End LLM Application)
 
-An end-to-end Medical PDF Question Answering Chatbot built using Retrieval-Augmented Generation (RAG).
-Users can upload medical PDF documents and ask questions in natural language. The system retrieves relevant document context using vector search and generates accurate answers using a Large Language Model.
+This project is an **end-to-end Medical PDF Question Answering Chatbot** built using **Retrieval-Augmented Generation (RAG)**.  
+Users can upload medical PDF documents and ask natural-language questions. Relevant information is retrieved from the documents using vector search and used by a Large Language Model to generate accurate answers.
 
-The project supports:
+The application supports:
+- Local execution (Python + Conda)
+- Docker-based execution
+- Running directly from Docker Hub on any machine
 
-Local development
+---
 
-Docker-based deployment
+##  Project Flow
 
-Docker Hub distribution
+1. Medical PDFs are loaded from the `data/` directory  
+2. Text is split into smaller chunks  
+3. Embeddings are generated using HuggingFace sentence transformers  
+4. Embeddings are stored in **Pinecone Vector Database**  
+5. On user query:
+   - Relevant document chunks are retrieved from Pinecone  
+   - Context is passed to **OpenAI LLM**  
+   - A final answer is generated  
 
-📌 Project Overview
+---
 
-This application follows a RAG pipeline:
+## Tech Stack
 
-Medical PDFs are loaded and processed
+- **Programming Language:** Python 3.10  
+- **Backend Framework:** Flask  
+- **LLM:** OpenAI  
+- **Embeddings:** HuggingFace Sentence Transformers  
+- **Vector Database:** Pinecone  
+- **Framework:** LangChain  
+- **Containerization:** Docker  
+- **Image Hosting:** Docker Hub  
 
-Text is split into semantic chunks
+---
 
-Embeddings are generated using HuggingFace models
+## 📂 Project Structure
 
-Embeddings are stored in Pinecone Vector Database
-
-Relevant chunks are retrieved for each query
-
-OpenAI LLM generates answers using retrieved context
-
-🧠 Architecture Flow
-PDF → Text Loader → Chunking → Embeddings
-     → Pinecone Vector Store
-     → Retriever
-     → OpenAI LLM
-     → Answer
-
-🛠 Tech Stack
-
-Language: Python 3.10
-
-Backend: Flask
-
-LLM: OpenAI
-
-Embeddings: HuggingFace Sentence Transformers
-
-Vector DB: Pinecone
-
-Framework: LangChain
-
-Deployment: Docker, Docker Hub
-
-📂 Project Structure
+```
 Medical-ChatBot/
 │
 ├── app.py                 # Flask application
@@ -62,141 +50,156 @@ Medical-ChatBot/
 │   ├── helper.py          # PDF loading, chunking, embeddings
 │   └── prompt.py          # Prompt templates
 └── data/
-    └── *.pdf              # Medical PDFs
+    └── *.pdf              # Medical PDF files
+```
 
-🔑 Prerequisites
+---
 
-Python 3.10
+## 🔑 Prerequisites
 
-Conda (recommended)
+- Python 3.10  
+- Conda (recommended)  
+- OpenAI API key  
+- Pinecone API key  
+- Docker  
 
-Pinecone account
+---
 
-OpenAI API key
+##  Step 1: Clone the Repository
 
-Docker (for deployment)
-
-🚀 STEP 1: Clone the Repository
+```
 git clone <your-github-repo-url>
 cd Medical-ChatBot
+```
 
-🧪 STEP 2: Local Environment Setup (Development)
-Create and activate environment
+---
+
+##  Step 2: Local Environment Setup
+
+```
 conda create -n medibot python=3.10
 conda activate medibot
-
-Install dependencies
 pip install -r requirements.txt
+```
 
-🔐 STEP 3: Environment Variables
+---
 
-Create a file named .env in the project root:
+##  Step 3: Configure Environment Variables
 
+Create a `.env` file in the project root:
+
+```
 OPENAI_API_KEY=your_openai_api_key
 PINECONE_API_KEY=your_pinecone_api_key
 PINECONE_ENVIRONMENT=us-east-1
+```
 
+Notes:
+- Do NOT use quotes
+- Do NOT commit `.env` to GitHub
 
-⚠️ Important:
+---
 
-Do NOT wrap values in quotes
+##  Step 4: Index Medical PDFs into Pinecone
 
-Do NOT commit .env to GitHub
+1. Add medical PDFs to the `data/` folder  
+2. Run:
 
-📥 STEP 4: Index Medical PDFs into Pinecone
-
-Place your medical PDFs inside the data/ folder.
-
-Run:
-
+```
 python store_index.py
+```
 
+This step loads PDFs, creates embeddings, and stores them in Pinecone.  
+Run only once unless PDFs change.
 
-This will:
+---
 
-Load PDFs
+##  Step 5: Run the Application Locally
 
-Split text into chunks
-
-Generate embeddings
-
-Store vectors in Pinecone
-
-Run this only once unless PDFs change.
-
-▶️ STEP 5: Run the Application Locally
+```
 python app.py
-
+```
 
 Open in browser:
 
+```
 http://localhost:8080
+```
 
-🐳 STEP 6: Dockerize the Application
-Build Docker image
+---
+
+##  Step 6: Build Docker Image
+
+```
 docker build -t medibot .
+```
 
-▶️ STEP 7: Run Using Docker (Recommended)
+---
+
+##  Step 7: Run Application Using Docker
+
+```
 docker run --env-file .env -p 8080:8080 medibot
+```
 
+Open in browser:
 
-Open:
-
+```
 http://localhost:8080
+```
 
+Stop container:
 
-Stop with:
-
+```
 Ctrl + C
+```
 
-🌍 STEP 8: Run from Docker Hub (Any Machine)
+---
 
-The image is published to Docker Hub.
+##  Step 8: Run Application from Docker Hub (Any Machine)
 
-Pull image
+```
 docker pull saicharanjogam/medibot
-
-Run container
 docker run --env-file .env -p 8080:8080 saicharanjogam/medibot
+```
+
+No Python, Conda, or GitHub clone required.
+
+---
+
+##  Secret Management
+
+- API keys are injected via environment variables
+- Secrets are not stored in code or Docker images
+- `.env` is excluded using `.gitignore`
+
+---
+
+## 📌 Key Highlights
+
+- End-to-end **RAG-based chatbot**
+- Semantic search with Pinecone
+- LLM-powered responses using OpenAI
+- Fully Dockerized application
+- Docker image published to Docker Hub
+
+---
+
+## 🎯 Future Improvements
+
+- Production server (Gunicorn)
+- Conversation memory
+- UI improvements
+- Reduced Docker image size
+- Cloud deployment
+
+---
+
+##  Author
+
+**Sai Charan Jogam**  
+Data Science | GenAI | LLMs | RAG Systems  
+
+---
 
 
-No Python.
-No Conda.
-No GitHub clone required.
-
-🔐 Secret Management
-
-API keys are injected at runtime
-
-Keys are not baked into the Docker image
-
-.env file is ignored by Git
-
-🧠 Key Learnings
-
-Built a complete RAG pipeline
-
-Understood vector search & semantic retrieval
-
-Solved real-world dependency & environment issues
-
-Containerized ML application using Docker
-
-Published and shared application via Docker Hub
-
-🎯 Future Enhancements
-
-Replace Flask dev server with Gunicorn
-
-Pinecone host-based authentication
-
-Chat history & memory
-
-Cloud deployment (AWS / GCP)
-
-Reduce Docker image size
-
-🧑‍💻 Author
-
-Sai Charan Jogam
-Data Science | GenAI | LLMs | RAG Systems
